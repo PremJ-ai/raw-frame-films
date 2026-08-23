@@ -78,25 +78,11 @@ export default function HeroSection() {
       >
         <div className="nav-container">
           <div className="nav-brand" aria-label="Raw Frame Films Home">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-              aria-hidden="true"
-              className="nav-logo"
-            >
-              <circle
-                cx="16"
-                cy="16"
-                r="14"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <circle cx="16" cy="16" r="7" fill="currentColor" />
-              <rect x="8" y="14" width="16" height="4" rx="2" fill="#151514" />
-            </svg>
-            <span className="nav-brand-text">RAW FRAME FILMS</span>
+            <img
+              src="/logorawframes.png"
+              alt="Raw Frames Film Production and Aperture Works"
+              className="nav-logo-image"
+            />
           </div>
 
           <nav className="nav-links" aria-label="Primary">
