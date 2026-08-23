@@ -1,4 +1,5 @@
-# React + TypeScript + Vite
+# React and Three.js based 3d rendered webstie
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
