@@ -5,6 +5,7 @@ import { getCarouselOffset } from "../utils/carousel";
 export default function ServiceCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const wheelLock = useRef(false);
 
   const changeSlide = (direction: number) => {
@@ -27,7 +28,7 @@ export default function ServiceCarousel() {
     });
   };
 
-  const handleWheel = (event: React.WheelEvent) => {
+  const handleWheel = (event: WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -38,6 +39,14 @@ export default function ServiceCarousel() {
       wheelLock.current = false;
     }, 650);
   };
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    section.addEventListener("wheel", handleWheel, { passive: false });
+    return () => section.removeEventListener("wheel", handleWheel);
+  }, [activeIndex]);
 
   useEffect(() => {
     if (!isHovered) return;
@@ -55,7 +64,7 @@ export default function ServiceCarousel() {
     <main
       className="service-carousel"
       id="services"
-      onWheel={handleWheel}
+      ref={sectionRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
