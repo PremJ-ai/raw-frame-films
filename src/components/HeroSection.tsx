@@ -1,8 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import HeroCameraBackground from "./HeroCameraBackground";
-import Hero3DForm from "./Hero3DForm";
-import { useScrollScrub } from "../hooks/useScrollScrub";
 
 type NavLink = {
   label: string;
@@ -25,7 +23,6 @@ const stats = [
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const scrollProgress = useScrollScrub();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -33,11 +30,11 @@ export default function HeroSection() {
 
   const textOpacity = useTransform(
     scrollYProgress,
-    [0, 0.3, 0.7],
-    [1, 0.6, 0.1],
+    [0, 0.4, 0.8],
+    [1, 0.6, 0],
   );
   const textBlur = useTransform(scrollYProgress, [0, 0.5, 1], [0, 4, 12]);
-  const textX = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
+  const textY = useTransform(scrollYProgress, [0, 0.8], [0, -60]);
   const statsOpacity = useTransform(
     scrollYProgress,
     [0, 0.4, 0.8],
@@ -97,12 +94,12 @@ export default function HeroSection() {
         </div>
       </header>
 
-      <main className="hero-split" aria-labelledby="hero-title">
+      <main className="hero-content" aria-labelledby="hero-title">
         <motion.div
-          className="hero-text-column"
+          className="hero-text-container"
           style={{
             opacity: textOpacity,
-            x: textX,
+            y: textY,
             filter: useTransform(textBlur, (v) => `blur(${v}px)`),
           }}
         >
@@ -196,10 +193,6 @@ export default function HeroSection() {
             ))}
           </motion.div>
         </motion.div>
-
-        <div className="hero-3d-form-column">
-          <Hero3DForm scrollProgress={scrollProgress} />
-        </div>
       </main>
 
       <motion.div

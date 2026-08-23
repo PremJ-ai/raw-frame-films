@@ -27,76 +27,84 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ error: `Missing required fields: ${missing.join(", ")}` });
   }
 
+  const emailUser = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+
   // ── Google Sheets: append lead row ────────────────────────────────
-  try {
-    const privateKey = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "")
-      .replace(/\\n/g, "\n");
+  if (emailUser && privateKey && sheetId) {
+    try {
+      const formattedKey = privateKey.replace(/\\n/g, "\n");
+      const jwtClient = new google.auth.JWT({
+        email: emailUser,
+        key: formattedKey,
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+      });
 
-    const jwtClient = new google.auth.JWT({
-      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      key: privateKey,
-      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-    });
+      await jwtClient.authorize();
 
-    await jwtClient.authorize();
-
-    const sheets = google.sheets({ version: "v4", auth: jwtClient });
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Sheet1!A:D",
-      valueInputOption: "RAW",
-      requestBody: {
-        values: [[name.trim(), phone.trim(), message.trim(), new Date().toISOString()]],
-      },
-    });
-  } catch (err) {
-    console.error("Sheets write failed:", err);
-    return res.status(500).json({ error: "Something went wrong. Please try again later." });
+      const sheets = google.sheets({ version: "v4", auth: jwtClient });
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: sheetId,
+        range: "Sheet1!A:D",
+        valueInputOption: "RAW",
+        requestBody: {
+          values: [[name.trim(), phone.trim(), message.trim(), new Date().toISOString()]],
+        },
+      });
+    } catch (err) {
+      console.error("Sheets write failed:", err);
+      console.log("Captured Lead:", { name, phone, message, timestamp: new Date().toISOString() });
+    }
+  } else {
+    console.log("Google Sheets credentials not set. Captured Lead:", { name, phone, message, timestamp: new Date().toISOString() });
   }
 
   // ── Gmail: send notification ──────────────────────────────────────
-  try {
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GMAIL_OAUTH_CLIENT_ID,
-      process.env.GMAIL_OAUTH_CLIENT_SECRET,
-    );
-    oauth2Client.setCredentials({
-      refresh_token: process.env.GMAIL_OAUTH_REFRESH_TOKEN,
-    });
+  if (
+    process.env.GMAIL_OAUTH_CLIENT_ID &&
+    process.env.GMAIL_OAUTH_CLIENT_SECRET &&
+    process.env.GMAIL_OAUTH_REFRESH_TOKEN
+  ) {
+    try {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GMAIL_OAUTH_CLIENT_ID,
+        process.env.GMAIL_OAUTH_CLIENT_SECRET,
+      );
+      oauth2Client.setCredentials({
+        refresh_token: process.env.GMAIL_OAUTH_REFRESH_TOKEN,
+      });
 
-    const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+      const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+      const to = process.env.NOTIFY_EMAIL_TO || "prem.lm.joshi@gmail.com";
+      const subject = `New lead: ${name.trim()}`;
+      const body = [
+        `Name:    ${name.trim()}`,
+        `Phone:   ${phone.trim()}`,
+        `Message: ${message.trim()}`,
+      ].join("\n");
 
-    const to = process.env.NOTIFY_EMAIL_TO;
-    const subject = `New lead: ${name.trim()}`;
-    const body = [
-      `Name:    ${name.trim()}`,
-      `Phone:   ${phone.trim()}`,
-      `Message: ${message.trim()}`,
-    ].join("\n");
+      const mimeMessage = [
+        `To: ${to}`,
+        `Subject: ${subject}`,
+        `Content-Type: text/plain; charset="UTF-8"`,
+        "",
+        body,
+      ].join("\r\n");
 
-    const mimeMessage = [
-      `To: ${to}`,
-      `Subject: ${subject}`,
-      `Content-Type: text/plain; charset="UTF-8"`,
-      "",
-      body,
-    ].join("\r\n");
+      const raw = Buffer.from(mimeMessage)
+        .toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
 
-    // Gmail API expects base64url encoding (RFC 4648 §5).
-    const raw = Buffer.from(mimeMessage)
-      .toString("base64")
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
-
-    await gmail.users.messages.send({
-      userId: "me",
-      requestBody: { raw },
-    });
-  } catch (err) {
-    // Email is a convenience notification — the lead is already captured
-    // in the sheet, so we still return success.
-    console.error("Gmail send failed:", err);
+      await gmail.users.messages.send({
+        userId: "me",
+        requestBody: { raw },
+      });
+    } catch (err) {
+      console.error("Gmail send failed:", err);
+    }
   }
 
   return res.status(200).json({ ok: true });
