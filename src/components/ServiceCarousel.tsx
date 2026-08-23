@@ -1,18 +1,36 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { services } from "../config/services";
 import { getCarouselOffset } from "../utils/carousel";
 
 export default function ServiceCarousel() {
-  const [activeIndex, setActiveIndex] = useState(2);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const wheelLock = useRef(false);
 
   const changeSlide = (direction: number) => {
-    setActiveIndex(
-      (current) => (current + direction + services.length) % services.length,
-    );
+    setActiveIndex((current) => {
+      const nextIndex = current + direction;
+
+      if (nextIndex < 0) {
+        document.getElementById("home")?.scrollIntoView({ behavior: "smooth" });
+        return current;
+      }
+
+      if (nextIndex >= services.length) {
+        document
+          .getElementById("contact")
+          ?.scrollIntoView({ behavior: "smooth" });
+        return current;
+      }
+
+      return nextIndex;
+    });
   };
 
   const handleWheel = (event: React.WheelEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (wheelLock.current || Math.abs(event.deltaY) < 10) return;
     wheelLock.current = true;
     changeSlide(event.deltaY > 0 ? 1 : -1);
@@ -21,8 +39,26 @@ export default function ServiceCarousel() {
     }, 650);
   };
 
+  useEffect(() => {
+    if (!isHovered) return;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) =>
+        current === services.length - 1 ? 0 : current + 1,
+      );
+    }, 2400);
+
+    return () => window.clearInterval(timer);
+  }, [isHovered]);
+
   return (
-    <main className="service-carousel" id="services" onWheel={handleWheel}>
+    <main
+      className="service-carousel"
+      id="services"
+      onWheel={handleWheel}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <header className="service-carousel__header">
         <p className="service-carousel__eyebrow">RAW FRAME FILMS / PORTFOLIO</p>
         <p className="service-carousel__hint">Selected work</p>
@@ -44,6 +80,17 @@ export default function ServiceCarousel() {
               data-service={service.number}
               style={{ ...style, "--card-offset": offset } as CSSProperties}
               aria-hidden={!isActive}
+              onClick={() => {
+                if (offset !== 0) changeSlide(offset < 0 ? -1 : 1);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  if (offset !== 0) changeSlide(offset < 0 ? -1 : 1);
+                }
+              }}
+              role={isActive ? undefined : "button"}
+              tabIndex={isActive ? undefined : 0}
             >
               <div className="service-card__media">
                 <video
