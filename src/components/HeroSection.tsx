@@ -270,25 +270,25 @@ export default function HeroSection() {
           >
             <div className="stat">
               <span className="stat-value" data-count="150">
-                0
+                55
               </span>
               <span className="stat-label">Projects Delivered</span>
             </div>
             <div className="stat">
               <span className="stat-value" data-count="12">
-                0
+                3
               </span>
               <span className="stat-label">Years Experience</span>
             </div>
             <div className="stat">
               <span className="stat-value" data-count="47">
-                0
+                2
               </span>
               <span className="stat-label">Awards Won</span>
             </div>
             <div className="stat">
               <span className="stat-value" data-count="300">
-                0
+                27
               </span>
               <span className="stat-label">Happy Clients</span>
             </div>
