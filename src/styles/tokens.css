@@ -1,0 +1,9 @@
+:root {
+  --color-ink: #f4f0e9;
+  --color-muted: #aaa49a;
+  --color-night: #030408;
+  --color-panel: #151b25;
+  --space-page: clamp(1.25rem, 5vw, 5rem);
+  --motion-slow: 700ms;
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+}

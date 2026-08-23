@@ -1,0 +1,194 @@
+RAW FRAME FILMS - React Project Report
+========================================
+
+Generated: 2025-08-23
+Project Root: D:\React Component
+
+========================================
+PROJECT OVERVIEW
+========================================
+A cinematic production company website built with React 19, Vite 8, TypeScript, and Framer Motion.
+Features a 3D hero section with scroll-triggered camera animation and a 3D service carousel.
+
+========================================
+TECH STACK
+========================================
+- React 19.2.8
+- React DOM 19.2.8
+- TypeScript 6.0.2
+- Vite 8.2.0
+- Framer Motion 12.x
+- @react-three/fiber 9.7.0
+- @react-three/drei 10.7.8
+- Three.js 0.185.1
+- ESLint 10.8.0
+- Google Fonts: Syne (display) + DM Sans (UI)
+
+========================================
+PROJECT STRUCTURE
+========================================
+D:\React Component/
+├── .vscode/
+│   ├── launch.json          # VS Code debug config
+│   └── settings.json        # Editor settings
+├── public/
+│   ├── favicon.svg
+│   ├── icons.svg
+│   ├── videos/
+│   │   └── README.md
+│   ├── audio/
+│   ├── models/
+│   └── textures/
+├── src/
+│   ├── assets/
+│   │   ├── hero.png
+│   │   ├── react.svg
+│   │   └── vite.svg
+│   ├── components/
+│   │   ├── HeroSection.tsx      # Main hero with 3D camera + nav + contact
+│   │   ├── ServiceCarousel.tsx  # 3D rotating card carousel
+│   │   ├── ScrollVideoScene.tsx # Three.js scroll video
+│   │   └── scenes/
+│   │       └── CameraScene.tsx  # Three.js camera scene
+│   ├── hooks/
+│   │   └── useScrollScrub.ts    # Custom scroll hook
+│   ├── App.tsx                  # Root component
+│   ├── App.css                  # All component styles
+│   ├── index.css                # Global styles + CSS variables
+│   ├── main.tsx                 # Entry point
+│   └── vite-env.d.ts
+├── index.html                   # HTML template with font preload
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── .gitignore
+├── README.md
+└── PROJECT_TIMELINE.md
+
+========================================
+KEY COMPONENTS
+========================================
+
+1. HeroSection.tsx (src/components/HeroSection.tsx)
+   - 3D camera model built with CSS transforms
+   - Scroll-triggered animations via Framer Motion useScroll/useTransform
+   - Camera rotates X/Y, translates Y, scales on scroll
+   - Navigation: Home, Services, Team, Contact (smooth scroll)
+   - Animated headline, subheadline, stats counters
+   - Contact section with form + contact details
+   - Floating particles, focus lines, lens ring animation
+
+2. ServiceCarousel.tsx (src/components/ServiceCarousel.tsx)
+   - 5-service horizontal carousel with 3D depth
+   - CSS 3D transforms: translateX, translateZ, rotateY, scale
+   - Keyboard (arrows), wheel, touch navigation
+   - Auto-play disabled, pause on hover
+   - Video backgrounds from Mixkit CDN
+   - Active card highlighted, side cards dimmed
+
+3. CameraScene.tsx (src/components/scenes/CameraScene.tsx)
+   - Three.js scene with camera model
+   - Scroll-controlled camera movement
+
+4. ScrollVideoScene.tsx (src/components/ScrollVideoScene.tsx)
+   - Video scrubbing tied to scroll position
+
+5. useScrollScrub.ts (src/hooks/useScrollScrub.ts)
+   - Custom hook for scroll-based video scrubbing
+
+========================================
+STYLING ARCHITECTURE
+========================================
+- CSS Custom Properties for theming (--ink, --muted, etc.)
+- Mobile-first responsive with clamp() for fluid typography
+- CSS 3D transforms for carousel perspective
+- Framer Motion for declarative animations
+- Backdrop-filter for glassmorphism cards
+- Conic gradients for animated lens rings
+
+========================================
+BUILD & DEV COMMANDS
+========================================
+npm run dev      # Start dev server (Vite)
+npm run build    # TypeScript check + production build
+npm run lint     # ESLint
+npm run preview  # Preview production build
+
+========================================
+DEBUGGING SETUP
+========================================
+VS Code launch.json configured with:
+- Launch Chrome (port 5173)
+- Attach to Chrome (port 9222)
+- Launch Edge
+- Source maps enabled via Vite
+
+To debug:
+1. npm run dev
+2. Press F5 in VS Code → "Launch Chrome"
+3. Set breakpoints in .tsx files
+
+========================================
+GIT IGNORE
+========================================
+Ignored: node_modules, dist, .env*, .vscode/, claude-zen, PROJECT_TIMELINE.md, package-lock.json, *.log, .DS_Store, coverage
+
+========================================
+DEPENDENCIES (package.json)
+========================================
+Production:
+- @react-three/drei: ^10.7.8
+- @react-three/fiber: ^9.7.0
+- framer-motion: ^12.x
+- react: ^19.2.8
+- react-dom: ^19.2.8
+- three: ^0.185.1
+
+Dev:
+- @vitejs/plugin-react: ^6.0.4
+- typescript: ~6.0.2
+- vite: ^8.2.0
+- eslint: ^10.8.0
+- @types/react: ^19.2.17
+- @types/react-dom: ^19.2.3
+- @types/three: ^0.185.4
+
+========================================
+KNOWN ISSUES / TODOS
+========================================
+- ServiceCarousel videos use external CDN (mixkit.co) - consider local hosting
+- Stats counters in HeroSection are static (data-count attributes, no animation logic)
+- Team section referenced in nav but not implemented
+- No test suite configured
+- TypeScript strict mode could be enabled
+
+========================================
+PERFORMANCE NOTES
+========================================
+- Build size: ~340 KB JS (gzipped: ~107 KB), ~15.5 KB CSS (gzipped: ~4 KB)
+- Videos lazy-load via preload="metadata"
+- CSS 3D transforms GPU-accelerated
+- Framer Motion uses transform/opacity for 60fps animations
+- Fonts preloaded in HTML head
+
+========================================
+ACCESSIBILITY
+========================================
+- Semantic HTML (header, main, section, nav, footer)
+- ARIA labels on interactive elements
+- Focus-visible states on buttons/links
+- Reduced motion via prefers-reduced-motion (not yet implemented)
+- Alt text on images
+- Keyboard navigation supported
+
+========================================
+BROWSER SUPPORT
+========================================
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+- Requires CSS 3D transforms, IntersectionObserver, ES2020
