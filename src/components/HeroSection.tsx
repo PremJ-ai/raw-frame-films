@@ -1,8 +1,8 @@
-﻿import { useRef } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import HeroCameraBackground from "./HeroCameraBackground";
-import Hero3DForm from "./Hero3DForm";
-import { useScrollScrub } from "../hooks/useScrollScrub";
+import heroImageOne from "../assets/hero/rawframe-1.jpg";
+import heroImageTwo from "../assets/hero/rawframe-2.jpg";
+import heroImageThree from "../assets/hero/rawframe-3.jpg";
 
 type NavLink = {
   label: string;
@@ -16,22 +16,27 @@ const navLinks: NavLink[] = [
   { label: "Contact", href: "#contact" },
 ];
 
-const stats = [
-  { value: "55", label: "Projects Delivered" },
-  { value: "3", label: "Years Experience" },
-  { value: "2", label: "Awards Won" },
-  { value: "27", label: "Happy Clients" },
-];
-
 export default function HeroSection() {
+  const cameraRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const scrollProgress = useScrollScrub();
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  
-  const textOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7], [1, 0.6, 0.1]);
-  const textBlur = useTransform(scrollYProgress, [0, 0.5, 1], [0, 4, 12]);
-  const textX = useTransform(scrollYProgress, [0, 0.5], [0, -60]);
-  const statsOpacity = useTransform(scrollYProgress, [0, 0.4, 0.8], [1, 0.5, 0]);
+
+  const { scrollY } = useScroll({ target: sectionRef });
+  const cameraRotateX = useTransform(
+    scrollY,
+    [0, window.innerHeight],
+    ["-15deg", "15deg"],
+  );
+  const cameraRotateY = useTransform(
+    scrollY,
+    [0, window.innerHeight],
+    ["10deg", "-10deg"],
+  );
+  const cameraTranslateY = useTransform(
+    scrollY,
+    [0, window.innerHeight],
+    ["0%", "20%"],
+  );
+  const cameraScale = useTransform(scrollY, [0, window.innerHeight], [1, 1.05]);
 
   const scrollTo = (href: string) => {
     const element = document.querySelector(href);
@@ -41,7 +46,31 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="hero-section" id="home" ref={sectionRef}>
+    <section ref={sectionRef} className="hero-section" id="home">
+      <div className="hero-background">
+        {/* Placeholder for real production photography. */}
+        <img
+          src={heroImageOne}
+          alt=""
+          className="hero-background-image hero-background-image--one"
+        />
+        {/* Placeholder for real production photography. */}
+        <img
+          src={heroImageTwo}
+          alt=""
+          className="hero-background-image hero-background-image--two"
+        />
+        {/* Placeholder for real production photography. */}
+        <img
+          src={heroImageThree}
+          alt=""
+          className="hero-background-image hero-background-image--three"
+        />
+        <div className="hero-gradient" />
+        <div className="hero-grid" />
+        <div className="hero-particles" aria-hidden="true" />
+      </div>
+
       <header
         className="hero-nav"
         role="navigation"
@@ -84,18 +113,92 @@ export default function HeroSection() {
         </div>
       </header>
 
-      <HeroCameraBackground />
+      <main className="hero-content" aria-labelledby="hero-title">
+        <div className="hero-camera-stage">
+          <motion.div
+            ref={cameraRef}
+            className="hero-camera"
+            style={{
+              rotateX: cameraRotateX,
+              rotateY: cameraRotateY,
+              y: cameraTranslateY,
+              scale: cameraScale,
+            }}
+            aria-hidden="true"
+          >
+            <div className="camera-body">
+              <div className="camera-lens">
+                <div className="lens-glass" />
+                <div className="lens-ring" />
+                <div className="lens-reflection" />
+              </div>
+              <div className="camera-grip" />
+              <div className="camera-viewfinder">
+                <div className="viewfinder-frame" />
+                <div className="viewfinder-overlay" />
+              </div>
+              <div className="camera-top">
+                <div className="hot-shoe" />
+                <div className="mode-dial" />
+                <div
+                  className="record-button"
+                  aria-label="Recording indicator"
+                />
+              </div>
+              <div className="camera-side">
+                <div className="focus-ring" />
+                <div className="zoom-ring" />
+              </div>
+            </div>
 
-      <main className="hero-split" aria-labelledby="hero-title">
-        <div
-          className="hero-text-column"
-          style={{
-            opacity: textOpacity.get(),
-            filter: "blur(" + textBlur.get() + "px)",
-            transform: "translateX(" + textX.get() + "px)",
-            mixBlendMode: "screen",
-          } as React.CSSProperties}
-        >
+            <motion.div
+              className="camera-floating-elements"
+              animate={{
+                y: [0, -20, 0],
+                rotateZ: [-5, 5, -5],
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              aria-hidden="true"
+            >
+              <div
+                className="float-particle"
+                style={{ top: "10%", left: "-30%", animationDelay: "0s" }}
+              />
+              <div
+                className="float-particle"
+                style={{ top: "30%", right: "-25%", animationDelay: "1.5s" }}
+              />
+              <div
+                className="float-particle"
+                style={{ bottom: "20%", left: "-20%", animationDelay: "3s" }}
+              />
+              <div
+                className="float-particle"
+                style={{ bottom: "10%", right: "-30%", animationDelay: "4.5s" }}
+              />
+            </motion.div>
+
+            <motion.div
+              className="camera-focus-lines"
+              animate={{
+                opacity: [0.3, 1, 0.3],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              aria-hidden="true"
+            >
+              {[0, 90, 180, 270].map((angle) => (
+                <div
+                  key={angle}
+                  className="focus-line"
+                  style={{ transform: `rotate(${angle}deg)` }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+
+        <div className="hero-text">
           <motion.h1
             id="hero-title"
             className="hero-headline"
@@ -164,40 +267,53 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: [0.23, 1, 0.32, 1] }}
-            style={{ opacity: statsOpacity.get() } as React.CSSProperties}
           >
-            {stats.map((stat) => (
-              <div key={stat.label} className="stat">
-                <span className="stat-value">{stat.value}</span>
-                <span className="stat-label">{stat.label}</span>
-              </div>
-            ))}
+            <div className="stat">
+              <span className="stat-value" data-count="150">
+                55
+              </span>
+              <span className="stat-label">Projects Delivered</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value" data-count="12">
+                3
+              </span>
+              <span className="stat-label">Years Experience</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value" data-count="47">
+                2
+              </span>
+              <span className="stat-label">Awards Won</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value" data-count="300">
+                27
+              </span>
+              <span className="stat-label">Happy Clients</span>
+            </div>
           </motion.div>
         </div>
 
-        <div className="hero-3d-form-column">
-          <Hero3DForm scrollProgress={scrollProgress} />
-        </div>
+        <motion.div
+          className="hero-scroll-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
+          aria-hidden="true"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 4v16M8 12l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>Scroll to explore</span>
+        </motion.div>
       </main>
-
-      <motion.div
-        className="hero-scroll-indicator"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
-        aria-hidden="true"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 4v16M8 12l4 4 4-4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span>Scroll to explore</span>
-      </motion.div>
     </section>
   );
 }
