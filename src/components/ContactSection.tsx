@@ -4,13 +4,21 @@ type ContactForm = {
   name: string;
   number: string;
   message: string;
+  company: string;
 };
 
-const initialForm: ContactForm = { name: "", number: "", message: "" };
+const initialForm: ContactForm = {
+  name: "",
+  number: "",
+  message: "",
+  company: "",
+};
 
 export default function ContactSection() {
   const [form, setForm] = useState<ContactForm>(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const updateField = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -18,14 +26,44 @@ export default function ContactSection() {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
     setSubmitted(false);
+    setError("");
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Contact form payload", form);
-    // TODO: Replace this local log with the production submission endpoint.
-    setSubmitted(true);
-    setForm(initialForm);
+    setError("");
+    setSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.number,
+          message: form.message,
+          company: form.company,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(
+          data.error || "Something went wrong. Please try again.",
+        );
+      }
+
+      setSubmitted(true);
+      setForm(initialForm);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -41,6 +79,20 @@ export default function ContactSection() {
           Tell us what you are making, and we&apos;ll start from there.
         </p>
         <form className="contact-section__form" onSubmit={handleSubmit}>
+          {/* Honeypot field — visually hidden, invisible to real users. */}
+          <div className="contact-section__honeypot" aria-hidden="true">
+            <label>
+              Company
+              <input
+                name="company"
+                type="text"
+                value={form.company}
+                onChange={updateField}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </label>
+          </div>
           <label>
             Name
             <input
@@ -73,12 +125,23 @@ export default function ContactSection() {
               rows={6}
             />
           </label>
-          <button type="submit">
-            Send enquiry <span aria-hidden="true">↗</span>
+          <button type="submit" disabled={submitting}>
+            {submitting ? (
+              "Sending\u2026"
+            ) : (
+              <>
+                Send enquiry <span aria-hidden="true">↗</span>
+              </>
+            )}
           </button>
           {submitted && (
             <p className="contact-section__success" role="status">
               Thanks. Your enquiry is ready for the next step.
+            </p>
+          )}
+          {error && (
+            <p className="contact-section__error" role="alert">
+              {error}
             </p>
           )}
         </form>
