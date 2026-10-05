@@ -1,0 +1,3 @@
+import { motion } from "framer-motion"; import { services } from "../data/site";
+// Services turns each capability into an interactive panel so the offering feels like part of the creative direction.
+export default function Services(){return <div className="page services-page"><div className="page-hero"><span className="section-label">02 / CAPABILITIES</span><h1>FROM<br/><i>IDEA →</i><br/>IMPACT.</h1><p>One studio, four stages. Bring us in for the whole thing or plug us into the part you need.</p></div><div className="service-panels">{services.map(s=><motion.a href="#/book" key={s.n} className="service-panel" whileHover={{scale:1.015}}><span>{s.n}</span><div><small>{s.kicker}</small><h2>{s.title}</h2><p>{s.text}</p></div><b>↗</b></motion.a>)}</div></div>}
