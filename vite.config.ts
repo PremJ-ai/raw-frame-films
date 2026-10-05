@@ -45,6 +45,9 @@ function contactApiDevPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages serves this repository under /raw-frame-films/.
+  // Setting the base path keeps JS, CSS, fonts, and images loading correctly in production.
+  base: '/raw-frame-films/',
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
