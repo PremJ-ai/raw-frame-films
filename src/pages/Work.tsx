@@ -1,0 +1,3 @@
+import { projects } from "../data/site"; import ProjectCard from "../components/ProjectCard";
+// Work is an editorial project archive; its data-driven structure can later be connected to a CMS.
+export default function Work(){return <div className="page"><div className="page-hero"><span className="section-label">01 / ARCHIVE</span><h1>THE<br/><i>WORK.</i></h1><p>A moving archive of campaigns, films, product stories and experiments.</p></div><div className="filter-row"><button>ALL</button><button>FILM</button><button>BRAND</button><button>DIGITAL</button><span>2025—2026</span></div><div className="project-grid project-grid--all">{projects.map((p,i)=><ProjectCard key={p.id} project={p} large={i%3===0}/>)}</div></div>}
