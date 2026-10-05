@@ -1,0 +1,3 @@
+import { clients } from "../data/site";
+// Clients deliberately use dummy names so approved client logos can replace them without changing the layout.
+export default function Clients(){return <div className="page clients-page"><div className="page-hero"><span className="section-label">04 / CLIENTS</span><h1>GOOD<br/><i>COMPANY.</i></h1><p>Dummy names below mark the intended logo wall. Replace them with approved identities and case studies before launch.</p></div><div className="logo-wall">{clients.map((c,i)=><div key={c}><span>0{i+1}</span><strong>{c}</strong></div>)}</div><blockquote>“The best work feels like it could only have been made by this team.”<small>— DUMMY CLIENT / CREATIVE LEAD</small></blockquote></div>}
