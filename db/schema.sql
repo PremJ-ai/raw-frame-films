@@ -1,0 +1,5 @@
+-- RAW/FRAME PostgreSQL schema. Run this once against the database in DATABASE_URL.
+CREATE TABLE IF NOT EXISTS leads (id BIGSERIAL PRIMARY KEY,name TEXT NOT NULL,email TEXT NOT NULL,phone TEXT,company TEXT,message TEXT NOT NULL,source TEXT DEFAULT 'contact',status TEXT NOT NULL DEFAULT 'new',created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS meetings (id BIGSERIAL PRIMARY KEY,name TEXT NOT NULL,email TEXT NOT NULL,phone TEXT,company TEXT,message TEXT,start_at TIMESTAMP NOT NULL,timezone TEXT NOT NULL DEFAULT 'Asia/Kolkata',status TEXT NOT NULL DEFAULT 'requested',calendar_event_id TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS chat_messages (id BIGSERIAL PRIMARY KEY,visitor_message TEXT NOT NULL,assistant_message TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE INDEX IF NOT EXISTS leads_created_at_idx ON leads(created_at DESC); CREATE INDEX IF NOT EXISTS meetings_start_at_idx ON meetings(start_at); CREATE INDEX IF NOT EXISTS chat_created_at_idx ON chat_messages(created_at DESC);
