@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import StudioShell,{PageTransition} from "./components/StudioShell";
 import Chatbot from "./components/Chatbot";
 import Home from "./pages/Home"; import Work from "./pages/Work"; import Services from "./pages/Services"; import Team from "./pages/Team"; import Clients from "./pages/Clients"; import Contact from "./pages/Contact"; import Book from "./pages/Book";
@@ -7,6 +8,6 @@ import Home from "./pages/Home"; import Work from "./pages/Work"; import Service
 export default function App(){
   const [route,setRoute]=useState(window.location.hash.replace("#/","")||"");
   useEffect(()=>{const onHash=()=>{setRoute(window.location.hash.replace("#/",""));window.scrollTo({top:0,behavior:"smooth"})};window.addEventListener("hashchange",onHash);return()=>window.removeEventListener("hashchange",onHash)},[]);
-  const pages:Record<string,React.ReactNode>={work:<Work/>,services:<Services/>,team:<Team/>,clients:<Clients/>,contact:<Contact/>,book:<Book/>};
+  const pages:Record<string,ReactNode>={work:<Work/>,services:<Services/>,team:<Team/>,clients:<Clients/>,contact:<Contact/>,book:<Book/>};
   return <StudioShell><PageTransition>{pages[route]||<Home/>}</PageTransition><Chatbot/></StudioShell>;
 }
