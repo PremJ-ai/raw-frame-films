@@ -1,0 +1,3 @@
+import { team } from "../data/site";
+// Team introduces the core crew while leaving room for real portraits and collaborators later.
+export default function Team(){return <div className="page"><div className="page-hero"><span className="section-label">03 / THE PEOPLE</span><h1>SMALL<br/><i>TEAM.</i><br/>BIG CUT.</h1><p>A flexible crew of makers. We pull in specialists around the brief instead of forcing every project into the same production shape.</p></div><div className="team-grid">{team.map((m,i)=><article key={m.name} className="team-card"><div className={"avatar avatar--"+i}>{String(i+1).padStart(2,"0")}</div><small>{m.role}</small><h2>{m.name}</h2><p>{m.note}</p></article>)}</div></div>}
